@@ -2,52 +2,29 @@
 
 class Program
 {
-    // НОД двух чисел по алгоритму Евклида:
-    // пока b != 0, заменяем пару (a, b) на (b, a % b). Когда b станет 0, ответ лежит в a.
-    // Пример: (48, 18) -> (18, 12) -> (12, 6) -> (6, 0) => НОД = 6
-    static int Gcd(int a, int b)
+    // n считается с 1: Fibonacci(1) = 1, Fibonacci(2) = 1, Fibonacci(3) = 2 ...
+    static long Fibonacci(int n)
     {
-        // Числа должны быть натуральными (> 0). Проверяем, чтобы не получить странные результаты.
-        if (a <= 0 || b <= 0)
-            throw new ArgumentOutOfRangeException(a <= 0 ? nameof(a) : nameof(b), "Числа должны быть натуральными (> 0)");
+        if (n < 1)
+            throw new ArgumentOutOfRangeException(nameof(n), "Номер числа Фибоначчи должен быть >= 1");
 
-        while (b != 0)
-        {
-            (a, b) = (b, a % b); // a и b — копии (передача по значению), поэтому спокойно меняем их
-        }
+        // Базовый случай: первые два числа ряда равны 1. Здесь рекурсия останавливается.
+        if (n <= 2)
+            return 1;
 
-        return a;
-    }
-
-    // ПЕРЕГРУЗКА: то же имя Gcd, но другое число параметров (три вместо двух).
-    // Компилятор сам выбирает нужный вариант по количеству и типам аргументов.
-    // Идея: НОД(a, b, c) = НОД(НОД(a, b), c)
-    static int Gcd(int a, int b, int c)
-    {
-        return Gcd(Gcd(a, b), c); // валидация уже есть внутри двухпараметрического метода
+        // Шаг рекурсии прямо по формуле из условия: Fk = Fk-1 + Fk-2
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
     }
 
     static void Main()
     {
-        // Два числа
-        Console.WriteLine($"Gcd(48, 18) = {Gcd(48, 18)}");   // 6
-        Console.WriteLine($"Gcd(17, 5) = {Gcd(17, 5)}");     // 1 (взаимно простые)
-        Console.WriteLine($"Gcd(100, 25) = {Gcd(100, 25)}"); // 25
-        Console.WriteLine($"Gcd(7, 7) = {Gcd(7, 7)}");       // 7
-
-        // Три числа
-        Console.WriteLine($"Gcd(48, 18, 30) = {Gcd(48, 18, 30)}"); // 6
-        Console.WriteLine($"Gcd(12, 18, 27) = {Gcd(12, 18, 27)}"); // 3
-        Console.WriteLine($"Gcd(8, 9, 10) = {Gcd(8, 9, 10)}");     // 1
-
-        // Проверка некорректного ввода
-        try
+        // Первые 10 чисел ряда
+        for (int i = 1; i <= 10; i++)
         {
-            Gcd(0, 5);
+            Console.WriteLine($"F({i}) = {Fibonacci(i)}");
         }
-        catch (ArgumentOutOfRangeException ex)
-        {
-            Console.WriteLine($"Ошибка: {ex.Message}");
-        }
+
+        // Для наглядности: большое число (займёт заметную долю секунды из-за множества повторных вызовов)
+        Console.WriteLine($"F(30) = {Fibonacci(30)}");
     }
 }
