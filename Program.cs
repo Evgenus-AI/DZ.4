@@ -2,41 +2,52 @@
 
 class Program
 {
-    // Рекурсия = метод вызывает сам себя. Нужны два обязательных элемента:
-    //   1) базовый случай (когда останавливаемся),
-    //   2) шаг, который приближает нас к базовому случаю.
-    // n! = n * (n-1)!, а 0! = 1 и 1! = 1.
-    static long Factorial(int n)
+    // НОД двух чисел по алгоритму Евклида:
+    // пока b != 0, заменяем пару (a, b) на (b, a % b). Когда b станет 0, ответ лежит в a.
+    // Пример: (48, 18) -> (18, 12) -> (12, 6) -> (6, 0) => НОД = 6
+    static int Gcd(int a, int b)
     {
-        if (n < 0)
-            throw new ArgumentOutOfRangeException(nameof(n), "Факториал определён только для n >= 0");
+        // Числа должны быть натуральными (> 0). Проверяем, чтобы не получить странные результаты.
+        if (a <= 0 || b <= 0)
+            throw new ArgumentOutOfRangeException(a <= 0 ? nameof(a) : nameof(b), "Числа должны быть натуральными (> 0)");
 
-        // Базовый случай: без него рекурсия никогда бы не закончилась
-        if (n <= 1)
-            return 1;
+        while (b != 0)
+        {
+            (a, b) = (b, a % b); // a и b — копии (передача по значению), поэтому спокойно меняем их
+        }
 
-        // Шаг рекурсии. checked(...) — проверка переполнения для этого выражения,
-        // чтобы на больших n получить OverflowException, а не тихий неверный результат.
-        return checked(n * Factorial(n - 1));
+        return a;
+    }
+
+    // ПЕРЕГРУЗКА: то же имя Gcd, но другое число параметров (три вместо двух).
+    // Компилятор сам выбирает нужный вариант по количеству и типам аргументов.
+    // Идея: НОД(a, b, c) = НОД(НОД(a, b), c)
+    static int Gcd(int a, int b, int c)
+    {
+        return Gcd(Gcd(a, b), c); // валидация уже есть внутри двухпараметрического метода
     }
 
     static void Main()
     {
-        int[] tests = { 0, 1, 5, 10, 20 };
+        // Два числа
+        Console.WriteLine($"Gcd(48, 18) = {Gcd(48, 18)}");   // 6
+        Console.WriteLine($"Gcd(17, 5) = {Gcd(17, 5)}");     // 1 (взаимно простые)
+        Console.WriteLine($"Gcd(100, 25) = {Gcd(100, 25)}"); // 25
+        Console.WriteLine($"Gcd(7, 7) = {Gcd(7, 7)}");       // 7
 
-        foreach (int n in tests)
-        {
-            Console.WriteLine($"{n}! = {Factorial(n)}");
-        }
+        // Три числа
+        Console.WriteLine($"Gcd(48, 18, 30) = {Gcd(48, 18, 30)}"); // 6
+        Console.WriteLine($"Gcd(12, 18, 27) = {Gcd(12, 18, 27)}"); // 3
+        Console.WriteLine($"Gcd(8, 9, 10) = {Gcd(8, 9, 10)}");     // 1
 
-        // Проверка переполнения: 21! не помещается в long
+        // Проверка некорректного ввода
         try
         {
-            Console.WriteLine($"21! = {Factorial(21)}");
+            Gcd(0, 5);
         }
-        catch (OverflowException)
+        catch (ArgumentOutOfRangeException ex)
         {
-            Console.WriteLine("21! — переполнение long");
+            Console.WriteLine($"Ошибка: {ex.Message}");
         }
     }
 }
