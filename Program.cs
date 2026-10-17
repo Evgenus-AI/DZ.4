@@ -6,8 +6,6 @@ class Program
     {
         if (n < 0)
             throw new ArgumentOutOfRangeException(nameof(n), "Факториал определён только для n >= 0");
-
-        // Базовый случай: без него рекурсия никогда бы не закончилась
         if (n <= 1)
             return 1;
 
